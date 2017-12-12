@@ -6,7 +6,6 @@ var total = 0;
 var timer;
 var candy;
 var Wrap = Wrap || {};
-Phaser.Cache.SOUND = 4;
 Wrap.gameplay = function (game) { };
 Wrap.gameplay.prototype = {
     preload: function () {
@@ -101,7 +100,7 @@ Wrap.gameplay.prototype = {
 
         /*audio*/
         this.music = this.add.audio('Music', 1, true, true);
-        //this.music.play('',0 ,1,true);
+        this.music.play('',0 ,1,true);
         this.music.volume = 0.5;
         this.voiceKill = this.add.audio('Killed', 1, true, true);
         this.voiceDamage = this.add.audio('Damage', 1, true, true);
