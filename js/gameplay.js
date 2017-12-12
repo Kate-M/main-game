@@ -30,7 +30,7 @@ Wrap.gameplay.prototype = {
         this.boss.physicsBodyType = Phaser.Physics.ARCADE;
 
         /*player*/
-        this.player = this.add.sprite(44, 85, "Player");
+        this.player = this.add.sprite(400, 0, "Player");
         this.player.anchor.setTo(0.5);
         // this.player.smoothed = false;
 
@@ -38,7 +38,7 @@ Wrap.gameplay.prototype = {
         this.physics.enable(this.player);
         this.player.body.collideWorldBounds = true;
 
-        this.add.tween(this.player).to({ y: 450 }, 1000, Phaser.Easing.Quadratic.In, true, 0, 0, false);
+        this.add.tween(this.player).to({ y: 500 }, 1000, Phaser.Easing.Quadratic.In, true, 0, 0, false);
         //this.physics.arcade.gravity.y = 40000;
         //this.physics.arcade.TITLE_BIAS = 32;
         //this.player.body.mass = 40;
@@ -273,8 +273,6 @@ Wrap.gameplay.prototype = {
         }
     },
     damagePlayer: function (player, villains) {
-        // var villains = b;
-        // var player = a;
         villains.y = villains.y + 5;
         if (villains.key == "Enemy") {
             player.damage(2);
