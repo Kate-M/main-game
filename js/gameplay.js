@@ -104,8 +104,8 @@ Wrap.gameplay.prototype = {
         this.music.volume = 0.5;
         this.voiceKill = this.add.audio('Killed', 1, true, true);
         this.voiceDamage = this.add.audio('Damage', 1, true, true);
-        this.inLittleBoss = this.add.audio('Fight', 10000, true, true);
-        this.deathLittleBoss = this.add.audio('DeathLittleBoss', 10000, true, true);
+        this.inLittleBoss = this.add.audio('Fight', 1, true, true);
+        this.deathLittleBoss = this.add.audio('DeathLittleBoss', 1, true, true);
         this.inBigBoss = this.add.audio('BigBoss', 10000, true, true);
         this.playerWound = this.add.audio('Wound', 1, true, true);
         this.playerCry = this.add.audio('Cry', 1, true, true);
@@ -113,14 +113,15 @@ Wrap.gameplay.prototype = {
 
     },
     createEnemies: function () {
-        var enemy = this.enemies.create(width + 150, this.world.randomY * 0.3 + 400, 'Enemy');
-        var enemy2 = this.enemies.create(- 150, this.world.randomY * 0.3 + 400, 'Enemy');
+        var enemy = this.enemies.create(width + 50, this.world.randomY * 0.3 + 400, 'Enemy');
+        var enemy2 = this.enemies.create(- 50, this.world.randomY * 0.25 + 450, 'Enemy');
         enemy.animations.add('walk');
         enemy.animations.play('walk', 10, true);
         enemy2.animations.add('walk');
         enemy2.animations.play('walk', 10, true);
-        this.add.tween(enemy).to({ x: width - 1600 }, 50000, Phaser.Easing.Linear.None, true);
-        this.add.tween(enemy2).to({ x: width + 1600 }, 50000, Phaser.Easing.Linear.None, true);
+        this.add.tween(enemy).to({ x: -60  }, 30000, Phaser.Easing.Linear.None, true, 0, 1000, true);
+        this.add.tween(enemy2).to({ x: width + 5  }, 35000, Phaser.Easing.Linear.None, true, 0, 8000, true);
+               
         total++;
         timer = this.time.now + 1000;
         enemy.body.moves = enemy2.body.moves = false;
@@ -139,7 +140,6 @@ Wrap.gameplay.prototype = {
         this.scoreText.text = "Score : " + score;
         if (this.enemies.countLiving() == 0) {
             this.createLittleBoss();
-            console.log(this.player.health);
             this.createCandy();
             this.voiceKill.play("", 0, 0.5, false);
             //this.voiceKill.volume = 0.5;
@@ -153,13 +153,10 @@ Wrap.gameplay.prototype = {
         littleBoss.animations.add('walk');
         littleBoss.animations.play('walk', 10, true);
         this.add.tween(littleBoss).to({ x: 0 }, 5000, Phaser.Easing.Linear.None, true, 0, 1000, true);
-        littleBoss.health = 5;
-        littleBoss.body.immovable = true;
-        littleBoss.body.collideWorldBounds = true;
-        littleBoss.body.bounce.setTo(1, 1);
+        littleBoss.health = 15;
 
-        this.inLittleBoss.fadeIn(1000);
-        this.inLittleBoss.fadeOut(2000);
+        // this.inLittleBoss.fadeIn(1000);
+        // this.inLittleBoss.fadeOut(2000);
 
     },
     createBigBoss: function () {
@@ -168,37 +165,39 @@ Wrap.gameplay.prototype = {
         bigBoss.animations.add('walk');
         bigBoss.animations.play('walk', 10, true);
         this.add.tween(bigBoss).to({ x: 0 }, 4000, Phaser.Easing.Linear.None, true, 0, 1000, true);
-        bigBoss.health = 10;
+        bigBoss.health = 25;
         bigBoss.body.immovable = true;
         bigBoss.body.collideWorldBounds = true;
         bigBoss.body.bounce.setTo(1, 1);
 
-        this.inBigBoss.fadeIn(2000);
-        this.inBigBoss.fadeOut(2000);
+        // this.inBigBoss.fadeIn(2000);
+        // this.inBigBoss.fadeOut(2000);
 
     },
 
     damageLittleBoss: function (bullet, boss) {
         var bosses = this.boss.getFirstExists();
-        if (bosses.key === 'LittleBoss') {
-            bosses.damage(2);
+        bosses.damage(2);
             var health = bosses.health;
             score += 2;
+        if (bosses.key === 'LittleBoss') {
+
             if (health <= 0) {
-                this.deathLittleBoss.fadeIn(1200);
+                this.deathLittleBoss.play('',0,0.75,false);
                 this.createBigBoss();
             }
+            console.log('kenny',bosses.health);
         }
         if (bosses.key === 'BigBoss') {
-            bosses.damage(2);
-            var health = bosses.health;
-            score += 2;
+            
             if (health <= 0) {
                 this.stateText.text = ' You Won, \n Click "R" \n to restart';
                 this.player.kill();
+                candy.kill();
                 this.stateText.visible = true;
                 this.music.fadeOut(1000);
             }
+            console.log('chief',bosses.health);
         }
         bullet.kill();
 
@@ -207,7 +206,7 @@ Wrap.gameplay.prototype = {
     },
     createCandy: function () {
         candy = this.add.sprite(200, 450, 'Candy');
-        //this.add.tween(candy).to({ y: 550 }, 1000, Phaser.Easing.Quadratic.In, true, 0, 0, false);
+        this.add.tween(candy).to({ y: 550 }, 1000, Phaser.Easing.Quadratic.In, true, 0, 0, false);
 
         this.physics.startSystem(Phaser.Physics.ARCADE);
         this.physics.enable(candy);
@@ -254,7 +253,7 @@ Wrap.gameplay.prototype = {
                 this.fire();
             }
         }
-        if (total < 2 && this.time.now > timer) {
+        if (total < 100 && this.time.now > timer) {
             this.createEnemies();
         }
         this.physics.arcade.collide(this.player, [this.enemies, this.boss], this.damagePlayer, null, this);
@@ -273,22 +272,23 @@ Wrap.gameplay.prototype = {
             }
         }
     },
-    damagePlayer: function (a, b) {
-        var villains = b.key;
-        var player = a;
-        if (villains == "Enemy") {
+    damagePlayer: function (player, villains) {
+        // var villains = b;
+        // var player = a;
+        villains.y = villains.y + 5;
+        if (villains.key == "Enemy") {
             player.damage(2);
             this.playerWound.play("", 0, 0.5, false);
             this.voiceDamage.play("", 0, 0.5, false);
         }
-        if (villains == "LittleBoss") {
-            player.damage(4);
+        if (villains.key == "LittleBoss") {
+            player.damage(3);
         }
-        if (villains == "BigBoss") {
+        if (villains.key == "BigBoss") {
             player.damage(10);
         }
         if (!this.game.paused || this.enemies.countLiving() > 0) {
-            this.player.y = this.player.y - 40;
+            //this.player.y = this.player.y - 40;
             this.HBRect.width = Math.floor((this.player.health / this.player.maxHealth) * this.emptyHB.width);
             this.fullHB.crop(this.HBRect);
 
