@@ -12,8 +12,8 @@ Wrap.loadingScreen.prototype = {
 
         //this.load.image('Enemy', "images/enemy.png");
         this.load.spritesheet('Candy', "images/candy.png", 25, 7);
-        this.load.spritesheet('Enemy', 'images/enemy2.png', 49, 60, 2);
-        this.load.spritesheet('LittleBoss', "images/little_boss.png", 40, 49,2);
+        this.load.spritesheet('Enemy', 'images/enemy3.png', 165, 200, 10);
+        this.load.spritesheet('SmallBoss', "images/small_boss.png", 40, 49,2);
         this.load.spritesheet('BigBoss', "images/big_boss.png", 88, 100);
         this.load.spritesheet("Player", "images/eric.png", 40, 44);
         this.load.spritesheet('Button', "images/button.png", 193, 71);

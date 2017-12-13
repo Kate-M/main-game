@@ -1,14 +1,15 @@
 'use strict';
 var width = window.innerWidth;
 var height = window.innerHeight;
-var score = 0;
-var total = 0;
-var timer;
+
 var candy;
 var Wrap = Wrap || {};
 Wrap.gameplay = function (game) { };
 Wrap.gameplay.prototype = {
-    preload: function () {
+    preload: function () {      
+        this.timer = 0;
+        this.score = 0;
+        this.total = 0;
 
         /*backgroung*/
         this.back = this.add.tileSprite(0, 0, width, height, "Fon");
@@ -16,14 +17,14 @@ Wrap.gameplay.prototype = {
         this.back.anchor.setTo(0);
 
         /*score*/
-        this.scoreText = this.add.text(32, 32, 'Score : ' + score, { font: "bold 32px SouthPark", fill: "#000" });
+        this.scoreText = this.add.text(32, 32, 'Score : ' + this.score, { font: "bold 32px SouthPark", fill: "#000" });
         this.scoreText.position.setTo(5);
 
         /*enemy*/
         this.enemies = this.add.group();
         this.enemies.enableBody = true;
         this.enemies.physicsBodyType = Phaser.Physics.ARCADE;
-        this.createEnemies();
+        
         /*boss*/
         this.boss = this.add.group();
         this.boss.enableBody = true;
@@ -88,8 +89,6 @@ Wrap.gameplay.prototype = {
         this.input.keyboard.addKey(Phaser.Keyboard.P).onDown.add(this.pauseGame, this);
         this.input.keyboard.addKey(Phaser.Keyboard.R).onDown.add(this.restartGame, this);
 
-
-
         //won text
         this.stateText = this.add.text(this.game.width * 0.5, this.game.height * 0.5, ' ', { font: '84px SouthPark', fill: '#fff' });
         this.stateText.stroke = "#A0D631";
@@ -100,46 +99,85 @@ Wrap.gameplay.prototype = {
 
         /*audio*/
         this.music = this.add.audio('Music', 1, true, true);
-        this.music.play('',0 ,1,true);
+        //this.music.play('',0 ,1,true);
         this.music.volume = 0.5;
         this.voiceKill = this.add.audio('Killed', 1, true, true);
         this.voiceDamage = this.add.audio('Damage', 1, true, true);
-        this.inLittleBoss = this.add.audio('Fight', 1, true, true);
-        this.deathLittleBoss = this.add.audio('DeathLittleBoss', 1, true, true);
+        this.inSmallBoss = this.add.audio('Fight', 1, true, true);
+        this.deathSmallBoss = this.add.audio('DeathSmallBoss', 1, true, true);
         this.inBigBoss = this.add.audio('BigBoss', 10000, true, true);
         this.playerWound = this.add.audio('Wound', 1, true, true);
         this.playerCry = this.add.audio('Cry', 1, true, true);
 
 
     },
-    createEnemies: function () {
-        var enemy = this.enemies.create(width + 50, this.world.randomY * 0.3 + 400, 'Enemy');
-        var enemy2 = this.enemies.create(- 50, this.world.randomY * 0.25 + 450, 'Enemy');
+    createNewEnemy: function () {
+        var leftEnemyConfig = {
+            startPoint: { x: width + 170, y: this.world.randomY * 0.3 + 300},
+            endPoint: {x: -170 }
+        };
+
+        var rightEnemyConfig = {
+            startPoint: { x: -170, y: this.world.randomY * 0.3 + 300 },
+            endPoint: {x: width + 200}
+        };
+        
+        var currentConfig;
+
+        if (this.game.rnd.integerInRange(0, 1) == 1) {
+            currentConfig = leftEnemyConfig;
+        } else {
+            currentConfig = rightEnemyConfig;
+        };
+
+        var enemy = this.enemies.create(currentConfig.startPoint.x, currentConfig.startPoint.y, 'Enemy');
+
         enemy.animations.add('walk');
         enemy.animations.play('walk', 10, true);
-        enemy2.animations.add('walk');
-        enemy2.animations.play('walk', 10, true);
-        this.add.tween(enemy).to({ x: -60  }, 30000, Phaser.Easing.Linear.None, true, 0, 1000, true);
-        this.add.tween(enemy2).to({ x: width + 5  }, 35000, Phaser.Easing.Linear.None, true, 0, 8000, true);
+
+        this.add.tween(enemy).to(currentConfig.endPoint, 30000, Phaser.Easing.Linear.None, true, 0, 1000, true);
+
+        return enemy;
+    },
+    createEnemies: function () {
+        this.createNewEnemy();
+        // var enemy = this.enemies.create(width + 50, this.world.randomY * 0.3 + 400, 'Enemy');
+        // var enemy2 = this.enemies.create(- 50, this.world.randomY * 0.25 + 450, 'Enemy');
+
+        
+        // enemy.animations.add('walk');
+        // enemy.animations.play('walk', 10, true);
+        // enemy2.animations.add('walk');
+        // enemy2.animations.play('walk', 10, true);
+        // this.add.tween(enemy).to({ x: -60  }, 30000, Phaser.Easing.Lin;8ear.None, true, 0, 1000, true);
+        // this.add.tween(enemy2).to({ x: width + 5  }, 35000, Phaser.Easing.Linear.None, true, 0, 8000, true);
                
-        total++;
-        timer = this.time.now + 1000;
-        enemy.body.moves = enemy2.body.moves = false;
-        enemy.body.immovable = enemy2.body.immovable = true;
-        enemy.body.collideWorldBounds = enemy2.body.collideWorldBounds = true;
+        this.total++;
+        this.timer = this.time.now + this.game.rnd.integerInRange(500, 2000);
+        // enemy.scale.setTo(0.4);
+        // console.log(enemy.y);
+        // if(enemy.y > 500 || enemy2.y > 500) {
+        //     enemy.scale.setTo(0.8);
+        //     enemy2.scale.setTo(0.8);;8
+        // }
+        // else if (enemy.y < 500 || enemy2.y < 500) {
+        //     enemy.scale.setTo(0.2);
+        //     enemy2.scale.setTo(0.2);
+        // }
+        
+        // enemy.body.moves = enemy2.body.moves = false;
+        // enemy.body.immovable = enemy2.body.immovable = true;
+        // enemy.body.collideWorldBounds = enemy2.body.collideWorldBounds = true;
 
     },
-    collisionHandler: function (bullet, enemy) {
+    damageEnemy: function (bullet, enemy) {
 
         bullet.kill();
         enemy.kill();
-
-
-
-        score++;
-        this.scoreText.text = "Score : " + score;
+        this.score++;
+        this.scoreText.text = "Score : " + this.score;
         if (this.enemies.countLiving() == 0) {
-            this.createLittleBoss();
+            this.createSmallBoss();
             this.createCandy();
             this.voiceKill.play("", 0, 0.5, false);
             //this.voiceKill.volume = 0.5;
@@ -147,16 +185,16 @@ Wrap.gameplay.prototype = {
 
 
     },
-    createLittleBoss: function () {
+    createSmallBoss: function () {
 
-        var littleBoss = this.boss.create(width + 5, this.world.randomY * 0.3 + 400, 'LittleBoss');
-        littleBoss.animations.add('walk');
-        littleBoss.animations.play('walk', 10, true);
-        this.add.tween(littleBoss).to({ x: 0 }, 5000, Phaser.Easing.Linear.None, true, 0, 1000, true);
-        littleBoss.health = 15;
+        var smallBoss = this.boss.create(width + 5, this.world.randomY * 0.3 + 400, 'SmallBoss');
+        smallBoss.animations.add('walk');
+        smallBoss.animations.play('walk', 10, true);
+        this.add.tween(smallBoss).to({ x: 0 }, 5000, Phaser.Easing.Linear.None, true, 0, 1000, true);
+        smallBoss.health = 15;
 
-        // this.inLittleBoss.fadeIn(1000);
-        // this.inLittleBoss.fadeOut(2000);
+        // this.inSmallBoss.fadeIn(1000);
+        // this.inSmallBoss.fadeOut(2000);
 
     },
     createBigBoss: function () {
@@ -175,15 +213,15 @@ Wrap.gameplay.prototype = {
 
     },
 
-    damageLittleBoss: function (bullet, boss) {
+    damageSmallBoss: function (bullet, boss) {
         var bosses = this.boss.getFirstExists();
         bosses.damage(2);
             var health = bosses.health;
-            score += 2;
-        if (bosses.key === 'LittleBoss') {
+            this.score += 2;
+        if (bosses.key === 'SmallBoss') {
 
             if (health <= 0) {
-                this.deathLittleBoss.play('',0,0.75,false);
+                this.deathSmallBoss.play('',0,0.75,false);
                 this.createBigBoss();
             }
             console.log('kenny',bosses.health);
@@ -202,7 +240,7 @@ Wrap.gameplay.prototype = {
         bullet.kill();
 
 
-        this.scoreText.text = "Score : " + score;
+        this.scoreText.text = "Score : " + this.score;
     },
     createCandy: function () {
         candy = this.add.sprite(200, 450, 'Candy');
@@ -253,14 +291,17 @@ Wrap.gameplay.prototype = {
                 this.fire();
             }
         }
-        if (total < 100 && this.time.now > timer) {
+        
+    if (this.total < 4 && (this.timer == 0 || this.time.now > this.timer)) {
             this.createEnemies();
         }
+
         this.physics.arcade.collide(this.player, [this.enemies, this.boss], this.damagePlayer, null, this);
         this.physics.arcade.overlap(this.player, candy, this.takeCandy, null, this);
-        this.physics.arcade.overlap(this.bullets, this.boss, this.damageLittleBoss, null, this);
-        this.physics.arcade.overlap(this.bullets, this.enemies, this.collisionHandler, null, this);
+        this.physics.arcade.overlap(this.bullets, this.boss, this.damageSmallBoss, null, this);
+        this.physics.arcade.overlap(this.bullets, this.enemies, this.damageEnemy, null, this);
 
+        this.enemies.sort('y', Phaser.Group.SORT_ASCENDING);
     },
     fire: function () {
         if (this.time.now > this.bulletTimer) {
@@ -279,7 +320,7 @@ Wrap.gameplay.prototype = {
             this.playerWound.play("", 0, 0.5, false);
             this.voiceDamage.play("", 0, 0.5, false);
         }
-        if (villains.key == "LittleBoss") {
+        if (villains.key == "SmallBoss") {
             player.damage(3);
         }
         if (villains.key == "BigBoss") {
@@ -313,7 +354,5 @@ Wrap.gameplay.prototype = {
     restartGame: function () {
         this.state.start("Gameplay");
         this.game.paused = false;
-        score = 0;
-        this.scoreText.text = "Score : " + score;
     }
 };
