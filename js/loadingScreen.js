@@ -3,8 +3,8 @@ var Wrap = Wrap || {};
 Wrap.loadingScreen = function (game) { };
 Wrap.loadingScreen.prototype = {
     preload: function () {
-        this.load.image("Fon", "images/back.jpg");
-        this.load.image('Eric', "images/snow_ball.png");
+        this.load.image("Fon", "images/back2.jpg");
+        //this.load.image('Eric', "images/snow_ball.png");
         this.load.image('Bullet', "images/snow_ball.png");
         this.load.image('HealthFull', "images/health_full.png");
         this.load.image('HealthEmpty', "images/health_empty.png");
