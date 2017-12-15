@@ -6,12 +6,12 @@ var customValues = {
 
 function EnemyFactory() {
     this.enemiesTotal = {
-        turkey: 200,
+        turkey: 150,
         kenny: 1,
         chief: 1
     };
 
-    this.remaining = { ...this.enemiesTotal};
+    this.remaining = JSON.parse(JSON.stringify(this.enemiesTotal));
 
     this.createNext = function () {
         for (var key in this.enemiesTotal) {

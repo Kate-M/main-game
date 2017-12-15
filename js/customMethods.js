@@ -16,14 +16,14 @@ var customMethods = {
         group.setAll("anchor.y", anchorY);
         return group;
     },
-    randomMovement: function(player,loop,boss,range,speed) {
+    randomMovement: function (player, loop, boss, range, minTop, speed) {
         var move = Wrap.game.time.events.loop(loop, function () {
-             Wrap.game.add.tween(boss).to({
-                x:  player.x,
-                y:  Wrap.game.world.randomY * range + 400
+            Wrap.game.add.tween(boss).to({
+                x: player.x,
+                y: Wrap.game.world.randomY * range + minTop
             }, speed, Phaser.Easing.Quadratic.InOut, true);
         }, this);
         return move;
-        
+
     }
 };

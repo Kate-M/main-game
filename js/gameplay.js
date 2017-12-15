@@ -1,8 +1,6 @@
 'use strict';
 var width = window.innerWidth;
 var height = window.innerHeight;
-
-
 var Wrap = Wrap || {};
 Wrap.gameplay = function (game) { };
 Wrap.gameplay.prototype = {
@@ -35,7 +33,6 @@ Wrap.gameplay.prototype = {
         this.enemies = this.add.group();
         this.enemies.enableBody = true;
         this.enemies.physicsBodyType = Phaser.Physics.ARCADE;
-        //this.latestEnemy = "turkey";
 
         /*boss*/
         this.boss = this.add.group();
@@ -44,8 +41,6 @@ Wrap.gameplay.prototype = {
 
         /*move*/
         this.cursor = this.input.keyboard.createCursorKeys();
-
-
         /*end of game*/
         this.gameOverMessage = this.add.text(this.game.width * 0.5, this.game.height * 0.5, "Game Over", { font: "bold 100px SouthPark", fill: "crimson" })
         this.gameOverMessage.stroke = "#000000";
@@ -59,9 +54,9 @@ Wrap.gameplay.prototype = {
         /*game control*/
         //this.pauseButton = this.add.button(this.game.height * 0.5,(this.game.height * 0.5)-55,"Button",this.pauseGame,this,1, 2, 0);
 
-        this.pauseText = this.add.text(this.game.width * 0.5, (this.game.height * 0.5) - 55, "Pause", { font: "bold 60px SouthPark", fill: "#A0D631" });
-        this.unPauseText = this.add.text(this.pauseText.x, (this.game.height * 0.5), "P/Esc", { font: "bold 60px SouthPark", fill: "#A0D631" });
-        this.restartText = this.add.text(this.pauseText.x, (this.game.height * 0.5) + 55, "R-Restart", { font: "bold 60px SouthPark", fill: "#A0D631" });
+        this.pauseText = this.add.text(this.game.width * 0.5, (this.game.height * 0.5) - 70, "Pause", { font: "bold 60px SouthPark", fill: "#A0D631" });
+        this.unPauseText = this.add.text(this.pauseText.x, (this.game.height * 0.5), '"P" - Continue', { font: "bold 60px SouthPark", fill: "#A0D631" });
+        this.restartText = this.add.text(this.pauseText.x, (this.game.height * 0.5) + 70, '"R" - Restart', { font: "bold 60px SouthPark", fill: "#A0D631" });
         this.pauseText.visible = this.unPauseText.visible = this.restartText.visible = false;
         this.pauseText.anchor.setTo(0.5);
         this.unPauseText.anchor.setTo(0.5);
@@ -97,7 +92,9 @@ Wrap.gameplay.prototype = {
         this.smallBossVoice = this.add.audio('Laughing', 1, true, true);
         this.eatCandy = this.add.audio('Candy', 1, true, true);
     },
+
     createEnemies: function () {
+
         this.latestEnemy = this.enemyCreator.createNext();
 
         if (this.latestEnemy === "turkey") {
@@ -115,13 +112,13 @@ Wrap.gameplay.prototype = {
     },
     createCreep: function () {
         var leftEnemyConfig = {
-            startPoint: { x: width + 170, y: this.world.randomY * 0.3 + 300 },
+            startPoint: { x: width + 300, y: this.world.randomY * 0.3 + 300 },
             endPoint: { x: -170 }
         };
 
         var rightEnemyConfig = {
             startPoint: { x: -170, y: this.world.randomY * 0.3 + 300 },
-            endPoint: { x: width + 200 }
+            endPoint: { x: width + 350 }
         };
 
         var currentConfig;
@@ -137,7 +134,7 @@ Wrap.gameplay.prototype = {
             enemy.animations.add('walk');
         enemy.animations.play('walk', 10, true);
 
-        this.add.tween(enemy).to(currentConfig.endPoint, 5000, Phaser.Easing.Linear.None, true, 0, 1000, true);
+        this.add.tween(enemy).to(currentConfig.endPoint, 8000, Phaser.Easing.Linear.None, true, 0, 1000, true);
         if (enemy.y > 400) {
             enemy.scale.setTo(0.7);
         }
@@ -157,9 +154,10 @@ Wrap.gameplay.prototype = {
         var smallBoss = this.boss.create(width + 5, this.world.randomY * 0.3 + 400, 'SmallBoss');
         smallBoss.animations.add('walk');
         smallBoss.animations.play('walk', 10, true);
+        smallBoss.scale.setTo(0.45);
         smallBoss.smoothed = false;
-        smallBoss.health = 20;
-        customMethods.randomMovement(this.player, 1500, smallBoss, 0.37, 2500);
+        smallBoss.health = 90;
+        customMethods.randomMovement(this.player, 1500, smallBoss, 0.37, 200, 2300);
         this.time.events.add(Phaser.Timer.SECOND * 5, soundOfBosses, this);
         function soundOfBosses() {
             if (smallBoss.health > 0) {
@@ -170,10 +168,11 @@ Wrap.gameplay.prototype = {
     createBigBoss: function () {
         var bigBoss = this.boss.create(width + 5, this.world.randomY * 0.3 + 400, 'BigBoss');
         bigBoss.animations.add('walk');
-        bigBoss.animations.play('walk', 10, true);
+        bigBoss.animations.play('walk', 2, true);
         this.add.tween(bigBoss).to({ x: 0 }, 4000, Phaser.Easing.Linear.None, true, 0, 1000, true);
-        bigBoss.health = 35;
-        customMethods.randomMovement(this.player, 1700, bigBoss, 0.3, 2000);
+        bigBoss.scale.setTo(0.9);
+        bigBoss.health = 100;
+        customMethods.randomMovement(this.player, 1700, bigBoss, 0.3, 90, 1800);
         bigBoss.smoothed = false;
         this.inBigBoss.play('', 0, 0.75, false);
         this.time.events.add(Phaser.Timer.SECOND * 7, soundOfBosses, this);
@@ -215,11 +214,12 @@ Wrap.gameplay.prototype = {
     },
     createCandy: function () {
         this.candy = this.add.sprite(this.world.randomX, this.worldюheight - 5, 'Candy');
+        this.candy.animations.add('fly');
+        this.candy.animations.play('fly', 30, false);
         this.add.tween(this.candy).to({ y: 550 }, 1000, Phaser.Easing.Quadratic.In, true, 0, 0, false);
 
         this.physics.startSystem(Phaser.Physics.ARCADE);
         this.physics.enable(this.candy);
-        this.candy.body.collideWorldBounds = true;
         this.candy.body.collideWorldBounds = true;
         this.add.tween(this.candy).to({ alpha: 0 }, 800, Phaser.Easing.Quadratic.In, true, 7000, 0, false);
     },
@@ -238,12 +238,12 @@ Wrap.gameplay.prototype = {
     createPlayer: function () {
         this.player.scale.setTo(0.6);
         this.player.body.mass = 0,
-        this.add.tween(this.player).to({ y: 500 }, 1000, Phaser.Easing.Quadratic.In, true, 0, 0, false);
+            this.add.tween(this.player).to({ y: height * 0.65 }, 1000, Phaser.Easing.Quadratic.In, true, 0, 0, false);
         //walk
-        this.player.animations.add("WalkUp", [9,10,11], 20, false, true);
-        this.player.animations.add("WalkDown", [3,4,2], 20, false, true);
-        this.player.animations.add("WalkRight", [3,4,2], 20, false, true);
-        this.player.animations.add("WalkLeft", [3,4,2], 20, false, true);
+        this.player.animations.add("WalkUp", [9, 10, 11], 20, false, true);
+        this.player.animations.add("WalkDown", [3, 4, 2], 20, false, true);
+        this.player.animations.add("WalkRight", [3, 4, 2], 20, false, true);
+        this.player.animations.add("WalkLeft", [3, 4, 2], 20, false, true);
         /*health*/
         this.player.health = this.player.maxHealth = 10;
         this.emptyHB = this.add.sprite((width - 195), 5, "HealthEmpty");
@@ -291,7 +291,9 @@ Wrap.gameplay.prototype = {
         this.createBullets();
         this.time.events.add(Phaser.Timer.SECOND * 10, playerStartSound, this);
         function playerStartSound() {
-            this.voiceKill.play('', 0, 1, false);
+            if (!this.gameOverMessage.exists && !this.winMessage.exists) {
+                this.voiceKill.play('', 0, 1, false);
+            }
         }
 
     },
@@ -299,6 +301,12 @@ Wrap.gameplay.prototype = {
         //this.back.tilePosition.x -= 0.25;
         this.enemies.sort('y', Phaser.Group.SORT_ASCENDING);
         this.world.bringToTop(this.boss);
+        this.world.bringToTop(this.gameOverMessage);
+        this.world.bringToTop(this.gameOverMessage);
+        this.world.bringToTop(this.winMessage);
+        this.world.bringToTop(this.pauseText);
+        this.world.bringToTop(this.unPauseText);
+        this.world.bringToTop(this.restartText);
 
         //keyboard
         this.player.body.velocity.setTo(0);
@@ -342,7 +350,7 @@ Wrap.gameplay.prototype = {
     },
     fire: function () {
         if (this.time.now > this.bulletTimer) {
-            var bullet = this.bullets.getFirstExists(false, false, this.player.x, this.player.y);
+            var bullet = this.bullets.getFirstExists(false, false, this.player.x - 50, this.player.y + 25);
             if (bullet) {
                 bullet.angle = this.player.angle + 50;
                 this.physics.arcade.moveToPointer(bullet, customValues.bulletProjectileSpeed);
