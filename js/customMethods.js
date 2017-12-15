@@ -23,7 +23,6 @@ var customMethods = {
                 y:  Wrap.game.world.randomY * range + 400
             }, speed, Phaser.Easing.Quadratic.InOut, true);
         }, this);
-        console.log(player);
         return move;
         
     }

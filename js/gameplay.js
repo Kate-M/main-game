@@ -23,7 +23,7 @@ Wrap.gameplay.prototype = {
         this.scoreText = this.add.text(32, 32, 'Score : ' + this.score, { font: "bold 32px SouthPark", fill: "#000" });
         this.scoreText.position.setTo(5);
         /*player*/
-        this.player = this.add.sprite(400, 0, "Player");
+        this.player = this.add.sprite(400, -800, "Player");
         this.player.anchor.setTo(0.5);
         this.player.smoothed = false;
         this.physics.startSystem(Phaser.Physics.ARCADE);
@@ -47,13 +47,13 @@ Wrap.gameplay.prototype = {
 
 
         /*end of game*/
-        this.gameOver = this.add.text(this.game.width * 0.5, this.game.height * 0.5, "Game Over", { font: "bold 100px SouthPark", fill: "crimson" })
-        this.gameOver.stroke = "#000000";
-        this.gameOver.strokeThickness = 20;
-        this.gameOver.setShadow(2, 2, "#DCB8BF", 2, true, true);
-        this.gameOver.exists = false;
-        this.gameOver.visible = false;
-        this.gameOver.anchor.setTo(0.5);
+        this.gameOverMessage = this.add.text(this.game.width * 0.5, this.game.height * 0.5, "Game Over", { font: "bold 100px SouthPark", fill: "crimson" })
+        this.gameOverMessage.stroke = "#000000";
+        this.gameOverMessage.strokeThickness = 20;
+        this.gameOverMessage.setShadow(2, 2, "#DCB8BF", 2, true, true);
+        this.gameOverMessage.exists = false;
+        this.gameOverMessage.visible = false;
+        this.gameOverMessage.anchor.setTo(0.5);
 
         this.camera.follow(this.player, Phaser.Camera.FOLLOW_TOPDOWN, 1, 1);
         /*game control*/
@@ -72,12 +72,13 @@ Wrap.gameplay.prototype = {
         this.input.keyboard.addKey(Phaser.Keyboard.R).onDown.add(this.restartGame, this);
 
         //won text
-        this.stateText = this.add.text(this.game.width * 0.5, this.game.height * 0.5, ' ', { font: '84px SouthPark', fill: '#fff' });
-        this.stateText.stroke = "#A0D631";
-        this.stateText.strokeThickness = 16;
-        this.stateText.setShadow(2, 2, "#333333", 2, true, true);
-        this.stateText.anchor.setTo(0.5);
-        this.stateText.visible = false;
+        this.winMessage = this.add.text(this.game.width * 0.5, this.game.height * 0.5, ' ', { font: '84px SouthPark', fill: '#fff' });
+        this.winMessage.stroke = "#A0D631";
+        this.winMessage.strokeThickness = 16;
+        this.winMessage.setShadow(2, 2, "#333333", 2, true, true);
+        this.winMessage.anchor.setTo(0.5);
+        this.winMessage.visible = false;
+        this.winMessage.exists = false;
 
         /*audio*/
         this.music = this.add.audio('Music', 1, true, true);
@@ -86,10 +87,15 @@ Wrap.gameplay.prototype = {
         this.voiceKill = this.add.audio('Killed', 1, true, true);
         this.voiceDamage = this.add.audio('Damage', 1, true, true);
         this.inSmallBoss = this.add.audio('Fight', 1, true, true);
+        this.goal = this.add.audio('Goal', 1, true, true);
+        this.won = this.add.audio('Won', 1, true, true);
         this.deathSmallBoss = this.add.audio('DeathSmallBoss', 1, true, true);
-        this.inBigBoss = this.add.audio('BigBoss', 10000, true, true);
+        this.inBigBoss = this.add.audio('BigBoss', 1, true, true);
+        this.bigBossSong = this.add.audio('BigBossSong', 1, true, true);
         this.playerWound = this.add.audio('Wound', 1, true, true);
         this.playerCry = this.add.audio('Cry', 1, true, true);
+        this.smallBossVoice = this.add.audio('Laughing', 1, true, true);
+        this.eatCandy = this.add.audio('Candy', 1, true, true);
     },
     createEnemies: function () {
         this.latestEnemy = this.enemyCreator.createNext();
@@ -103,7 +109,7 @@ Wrap.gameplay.prototype = {
             this.time.events.add(Phaser.Timer.SECOND * 10, this.disappearanceCandy, this);
         }
         if (this.latestEnemy === "chief") {
-            this.createBigBoss();
+            this.time.events.add(Phaser.Timer.SECOND * 2.5, this.createBigBoss, this);
         }
         this.timer = this.time.now + this.game.rnd.integerInRange(150, 1000);
     },
@@ -128,36 +134,38 @@ Wrap.gameplay.prototype = {
 
         var enemy = this.enemies.create(currentConfig.startPoint.x, currentConfig.startPoint.y, 'Enemy');
         enemy.body.mass = 1,
-        enemy.animations.add('walk');
+            enemy.animations.add('walk');
         enemy.animations.play('walk', 10, true);
 
         this.add.tween(enemy).to(currentConfig.endPoint, 5000, Phaser.Easing.Linear.None, true, 0, 1000, true);
-        console.log(enemy.y);
         if (enemy.y > 400) {
             enemy.scale.setTo(0.7);
         }
         else if (enemy.y < 400) {
             enemy.scale.setTo(0.4);
         }
-        return enemy;
     },
     damageEnemy: function (bullet, enemy) {
         bullet.kill();
         enemy.kill();
         this.score++;
         this.scoreText.text = "Score : " + this.score;
+        this.goal.play('', 0, 0.75, false);
+
     },
     createSmallBoss: function () {
-
         var smallBoss = this.boss.create(width + 5, this.world.randomY * 0.3 + 400, 'SmallBoss');
         smallBoss.animations.add('walk');
         smallBoss.animations.play('walk', 10, true);
         smallBoss.smoothed = false;
         smallBoss.health = 20;
         customMethods.randomMovement(this.player, 1500, smallBoss, 0.37, 2500);
-        // this.inSmallBoss.fadeIn(1000);
-        // this.inSmallBoss.fadeOut(2000);
-
+        this.time.events.add(Phaser.Timer.SECOND * 5, soundOfBosses, this);
+        function soundOfBosses() {
+            if (smallBoss.health > 0) {
+                this.smallBossVoice.play('', 0, 0.6, false);
+            }
+        }
     },
     createBigBoss: function () {
         var bigBoss = this.boss.create(width + 5, this.world.randomY * 0.3 + 400, 'BigBoss');
@@ -167,9 +175,13 @@ Wrap.gameplay.prototype = {
         bigBoss.health = 35;
         customMethods.randomMovement(this.player, 1700, bigBoss, 0.3, 2000);
         bigBoss.smoothed = false;
-        // this.inBigBoss.fadeIn(2000);
-        // this.inBigBoss.fadeOut(2000);
-
+        this.inBigBoss.play('', 0, 0.75, false);
+        this.time.events.add(Phaser.Timer.SECOND * 7, soundOfBosses, this);
+        function soundOfBosses() {
+            if (bigBoss.health > 0) {
+                this.bigBossSong.play('', 0, 0.75, false);
+            }
+        }
     },
 
     damageBoss: function (bullet, boss) {
@@ -178,7 +190,6 @@ Wrap.gameplay.prototype = {
         var health = bosses.health;
         this.score += 2;
         if (bosses.key === 'SmallBoss') {
-
             if (health <= 0) {
                 this.deathSmallBoss.play('', 0, 0.75, false);
             }
@@ -186,15 +197,21 @@ Wrap.gameplay.prototype = {
         if (bosses.key === 'BigBoss') {
 
             if (health <= 0) {
-                this.stateText.text = ' You Won, \n Click "R" \n to restart';
-                this.player.kill();
-                this.candy.kill();
-                this.stateText.visible = true;
+                this.endOfGame();
+                this.winMessage.exists = true;
+                this.winMessage.text = ' You Won, \n Click "R" \n to restart';
+                this.winMessage.visible = true;
                 this.music.fadeOut(1000);
+                this.won.play('', 0, 0.75, true);
+                this.won.fadeOut(9000);
+                this.candy.kill();
+                //this.bosses.kill();
+                //this.music.fadeOut(1000);
             }
         }
         bullet.kill();
         this.scoreText.text = "Score : " + this.score;
+        this.goal.play('', 0, 0.75, false);
     },
     createCandy: function () {
         this.candy = this.add.sprite(this.world.randomX, this.worldюheight - 5, 'Candy');
@@ -209,32 +226,38 @@ Wrap.gameplay.prototype = {
     takeCandy: function () {
         this.candy.kill();
         if (this.player.health < 10) {
-            this.player.health = 10
+            this.player.health = 10;
             this.HBRect.width = Math.floor((this.player.health / this.player.maxHealth) * this.emptyHB.width);
             this.fullHB.crop(this.HBRect);
         }
+        this.eatCandy.play('', 0, 20, false);
     },
     disappearanceCandy: function () {
         this.candy.kill();
     },
     createPlayer: function () {
-        
-        this.player.body.collideWorldBounds = true;
+        this.player.scale.setTo(0.6);
         this.player.body.mass = 0,
         this.add.tween(this.player).to({ y: 500 }, 1000, Phaser.Easing.Quadratic.In, true, 0, 0, false);
         //walk
-        this.player.animations.add("WalkRight", [], 5, false, true);
+        this.player.animations.add("WalkUp", [9,10,11], 20, false, true);
+        this.player.animations.add("WalkDown", [3,4,2], 20, false, true);
+        this.player.animations.add("WalkRight", [3,4,2], 20, false, true);
+        this.player.animations.add("WalkLeft", [3,4,2], 20, false, true);
         /*health*/
         this.player.health = this.player.maxHealth = 10;
         this.emptyHB = this.add.sprite((width - 195), 5, "HealthEmpty");
         this.fullHB = this.add.sprite((width - 195), 5, "HealthFull", 1);
         this.life = this.add.sprite((this.emptyHB.x - 15), 15, "Life", 2);
         this.HBRect = new Phaser.Rectangle(0, 0, this.emptyHB.width, this.emptyHB.height);
+        this.time.events.add(Phaser.Timer.SECOND * 1, applyBounds, this);
+        function applyBounds() {
+            this.player.body.collideWorldBounds = true;
+        }
     },
-    createBullets:function() {
-         /*bullet*/
+    createBullets: function () {
+        /*bullet*/
         this.bulletTimer = 0;
-        
         this.bullets.setAll("outOfBoundsKill", true);
         this.bullets.setAll("checkWorldBounds", true);
     },
@@ -253,12 +276,11 @@ Wrap.gameplay.prototype = {
         if (!this.game.paused || this.enemies.countLiving() > 0) {
             this.HBRect.width = Math.floor((this.player.health / this.player.maxHealth) * this.emptyHB.width);
             this.fullHB.crop(this.HBRect);
-            this.gameOver.exists = (this.player.health <= 0);
+            this.gameOverMessage.exists = (this.player.health <= 0);
         }
-        if (this.gameOver.exists) {
-            this.music.fadeOut(2000);
+        if (this.gameOverMessage.exists) {
+            this.endOfGame();
             this.enemies.kill();
-            this.voiceDamage.stop();
             this.playerCry.fadeIn(1000);
         }
 
@@ -267,9 +289,13 @@ Wrap.gameplay.prototype = {
         this.input.mouse.capture = true;
         this.createPlayer();
         this.createBullets();
+        this.time.events.add(Phaser.Timer.SECOND * 10, playerStartSound, this);
+        function playerStartSound() {
+            this.voiceKill.play('', 0, 1, false);
+        }
+
     },
     update: function () {
-        //console.log(this.player.x);
         //this.back.tilePosition.x -= 0.25;
         this.enemies.sort('y', Phaser.Group.SORT_ASCENDING);
         this.world.bringToTop(this.boss);
@@ -279,19 +305,22 @@ Wrap.gameplay.prototype = {
         var upperBound = 450;
         if ((this.cursor.up.isDown || this.input.keyboard.isDown(Phaser.Keyboard.UP)) && (this.player.y > upperBound)) {
             this.player.body.velocity.y = -200;
+            this.player.animations.play("WalkUp", true);
         }
         else if (this.cursor.down.isDown || this.input.keyboard.isDown(Phaser.Keyboard.DOWN)) {
             this.player.body.velocity.y = 200;
+            this.player.animations.play("WalkDown", true);
         }
         if (this.cursor.left.isDown || this.input.keyboard.isDown(Phaser.Keyboard.LEFT)) {
             this.player.body.velocity.x = -200;
+            this.player.animations.play("WalkLeft", true);
         }
         else if (this.cursor.right.isDown || this.input.keyboard.isDown(Phaser.Keyboard.RIGHT)) {
             this.player.body.velocity.x = 200;
             this.player.animations.play("WalkRight", true);
         }
         else if (this.cursor.right.isDown || this.input.mousePointer.isDown) {
-            this.player.animations.play("WalkRight", true);
+            //this.player.animations.play("WalkRight", true);
             if (this.player.alive) {
                 this.fire();
             }
@@ -304,6 +333,7 @@ Wrap.gameplay.prototype = {
         if (!shouldWait && (!noMoreCurrentEnemies || (noMoreCurrentEnemies && (currentEnemiesAreDead && this.boss.countLiving() === 0)))) {
             this.createEnemies();
         }
+
         this.physics.arcade.collide(this.player, [this.enemies, this.boss], this.damagePlayer, null, this);
         this.physics.arcade.overlap(this.player, this.candy, this.takeCandy, null, this);
         this.physics.arcade.overlap(this.bullets, this.boss, this.damageBoss, null, this);
@@ -322,7 +352,7 @@ Wrap.gameplay.prototype = {
     },
     pauseGame: function () {
         this.back.tint = 0xffffff;
-        if (this.enemies.countLiving() > 0 && !this.gameOver.exists) {
+        if (!this.gameOverMessage.exists && !this.winMessage.exists) {
             this.game.paused = !this.game.paused;
             this.pauseText.visible = this.unPauseText.visible = this.restartText.visible = this.game.paused;
         }
@@ -333,5 +363,10 @@ Wrap.gameplay.prototype = {
     restartGame: function () {
         this.state.start("Gameplay");
         this.game.paused = false;
+    },
+    endOfGame: function () {
+        this.music.fadeOut(2000);
+        this.voiceDamage.stop();
+        this.player.kill();
     }
 };
