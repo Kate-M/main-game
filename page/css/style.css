@@ -76,18 +76,6 @@
   -moz-osx-font-smoothing: grayscale;
 }
 
-.icon-close:before {
-  content: "\e900";
-}
-
-.icon-searcher:before {
-  content: "\e901";
-}
-
-.icon-ok-mark:before {
-  content: "\e902";
-}
-
 .icon-remove:before {
   content: "\e920";
 }
@@ -96,40 +84,65 @@
   content: "\e921";
 }
 
+.icon-menu:before {
+  content: "\e914";
+}
+
 .icon-arrow-down:before {
-  content: "\e903";
+  content: "\e900";
 }
 
-.icon-clicker:before {
-  content: "\e904";
-}
-
-.icon-computer-mouse:before {
+.icon-cancel:before {
   content: "\e905";
 }
 
-.icon-github-sign:before {
+.icon-clicker:before {
   content: "\e906";
 }
 
-.icon-arrow-up:before {
-  content: "\e907";
-}
-
-.icon-arrow-right:before {
+.icon-github-sign:before {
   content: "\e908";
 }
 
-.icon-arrow-left:before {
+.icon-arrow-up:before {
   content: "\e909";
 }
 
-.icon-linkedin-logo:before {
+.icon-arrow-right:before {
   content: "\e90a";
 }
 
-.icon-mouse:before {
+.icon-arrow-left:before {
   content: "\e90b";
+}
+
+.icon-linkedin-logo:before {
+  content: "\e90c";
+}
+
+.icon-mouse:before {
+  content: "\e90d";
+}
+
+.icon-musica-searcher:before {
+  content: "\e90f";
+}
+
+.icon-ok-mark:before {
+  content: "\e910";
+}
+
+.icon-target:before {
+  content: "\e911";
+  color: #016f4a;
+}
+
+.icon-col-next:before {
+  content: "\e912";
+}
+
+.icon-col-prev:before {
+  content: "\e913";
 }
 
 /* Eric Meyer's CSS Reset
@@ -851,21 +864,21 @@ h3 {
   background: url(../images/eric.png) no-repeat;
 }
 
-.controls-side {
-  -webkit-animation: MovementSide  1.5s linear  infinite;
-          animation: MovementSide  1.5s linear  infinite;
-}
-
 .controls-up {
   -webkit-animation: MovementUp  1.5s linear  infinite;
           animation: MovementUp  1.5s linear  infinite;
 }
 
 .controls-button {
-  padding-left: 2rem;
+  padding-left: 150px;
   min-width: 50%;
   color: #ffffff;
   text-align: center;
+}
+@media (max-width: 767px) {
+  .controls-button {
+    padding-left: 40px;
+  }
 }
 .controls-button p {
   font-size: 1.25rem;
@@ -913,19 +926,19 @@ h3 {
 .btn-start {
   text-transform: uppercase;
   padding: 1.5rem 2rem;
-  background: #ffffff;
-  color: #016f4a;
+  background: #016f4a;
+  color: #ffffff;
   font-weight: bold;
   border-radius: 3px;
 }
 .btn-start:hover {
-  background: #016f4a;
-  color: #ffffff;
+  background: #ffffff;
+  color: #016f4a;
 }
 
 /*===================FOOTER===================*/
 footer {
-  padding: 15px 0;
+  padding: 10px 0;
   -webkit-flex: 0 0 auto;
       -ms-flex: 0 0 auto;
           flex: 0 0 auto;
@@ -936,11 +949,11 @@ footer {
   padding: 10px 0;
 }
 .social li {
-  padding: 0 5px;
+  padding: 0 10px;
 }
 .social a {
   color: #333333;
-  font-size: 20px;
+  font-size: 30px;
 }
 .social a:hover {
   color: #016f4a;

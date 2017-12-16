@@ -17,6 +17,14 @@ Wrap.gameplay.prototype = {
         if (width > height) {
             this.back.width = this.world.width;
         }
+
+        /*pointer*/
+        this.game.canvas.style.cursor = "none";
+        this.pointer = this.add.sprite(0, 0, "Pointer");
+        this.physics.startSystem(Phaser.Physics.ARCADE);
+        this.physics.enable(this.pointer);
+        this.pointer.body.allowRotation = false;
+        
         /*score*/
         this.scoreText = this.add.text(32, 32, 'Score : ' + this.score, { font: "bold 32px SouthPark", fill: "#000" });
         this.scoreText.position.setTo(5);
@@ -28,6 +36,10 @@ Wrap.gameplay.prototype = {
         this.physics.enable(this.player);
         /*bullets*/
         this.bullets = customMethods.newGroup(16, "Bullet");
+        /*blood*/
+        this.blood = this.add.group();
+        this.blood.enableBody = true;
+        this.blood.physicsBodyType = Phaser.Physics.ARCADE;
         /*enemy*/
         this.enemyCreator = new EnemyFactory();
         this.enemies = this.add.group();
@@ -77,8 +89,7 @@ Wrap.gameplay.prototype = {
 
         /*audio*/
         this.music = this.add.audio('Music', 1, true, true);
-        this.music.play('', 0, 1, true);
-        this.music.volume = 0.5;
+        this.music.play('', 0, 0.5, true);
         this.voiceKill = this.add.audio('Killed', 1, true, true);
         this.voiceDamage = this.add.audio('Damage', 1, true, true);
         this.inSmallBoss = this.add.audio('Fight', 1, true, true);
@@ -148,7 +159,12 @@ Wrap.gameplay.prototype = {
         this.score++;
         this.scoreText.text = "Score : " + this.score;
         this.goal.play('', 0, 0.75, false);
-
+        var bloodSpot = this.blood.create(enemy.x, enemy.y, 'Blood');
+        bloodSpot.smoothed = false;
+        bloodSpot.animations.add('walk');
+        bloodSpot.animations.play('walk', 10, false);
+        this.add.tween(bloodSpot).to({y: height + 100}, 2000, Phaser.Easing.Linear.None, true, 0, 0, false);
+        
     },
     createSmallBoss: function () {
         var smallBoss = this.boss.create(width + 5, this.world.randomY * 0.3 + 400, 'SmallBoss');
@@ -241,9 +257,9 @@ Wrap.gameplay.prototype = {
             this.add.tween(this.player).to({ y: height * 0.65 }, 1000, Phaser.Easing.Quadratic.In, true, 0, 0, false);
         //walk
         this.player.animations.add("WalkUp", [9, 10, 11], 20, false, true);
-        this.player.animations.add("WalkDown", [3, 4, 2], 20, false, true);
-        this.player.animations.add("WalkRight", [3, 4, 2], 20, false, true);
-        this.player.animations.add("WalkLeft", [3, 4, 2], 20, false, true);
+        this.player.animations.add("WalkSide", [3, 4, 2], 20, false, true);
+        this.player.animations.add("WalkFire", [0, 5, 6], 10, false, true);
+        this.player.animations.add("WalkDamage", [12], 20, false, true);
         /*health*/
         this.player.health = this.player.maxHealth = 10;
         this.emptyHB = this.add.sprite((width - 195), 5, "HealthEmpty");
@@ -262,6 +278,7 @@ Wrap.gameplay.prototype = {
         this.bullets.setAll("checkWorldBounds", true);
     },
     damagePlayer: function (player, enemy) {
+        this.player.animations.play("WalkDamage", true);
         if (enemy.key == "Enemy") {
             player.damage(2);
             this.playerWound.play("", 0, 0.5, false);
@@ -301,6 +318,7 @@ Wrap.gameplay.prototype = {
         //this.back.tilePosition.x -= 0.25;
         this.enemies.sort('y', Phaser.Group.SORT_ASCENDING);
         this.world.bringToTop(this.boss);
+        this.world.bringToTop(this.pointer);
         this.world.bringToTop(this.gameOverMessage);
         this.world.bringToTop(this.gameOverMessage);
         this.world.bringToTop(this.winMessage);
@@ -308,6 +326,8 @@ Wrap.gameplay.prototype = {
         this.world.bringToTop(this.unPauseText);
         this.world.bringToTop(this.restartText);
 
+        //pointer
+        this.physics.arcade.moveToPointer(this.pointer, 0, this.input.activePointer,100);
         //keyboard
         this.player.body.velocity.setTo(0);
         var upperBound = 450;
@@ -317,18 +337,18 @@ Wrap.gameplay.prototype = {
         }
         else if (this.cursor.down.isDown || this.input.keyboard.isDown(Phaser.Keyboard.DOWN)) {
             this.player.body.velocity.y = 200;
-            this.player.animations.play("WalkDown", true);
+            this.player.animations.play("WalkSide", true);
         }
         if (this.cursor.left.isDown || this.input.keyboard.isDown(Phaser.Keyboard.LEFT)) {
             this.player.body.velocity.x = -200;
-            this.player.animations.play("WalkLeft", true);
+            this.player.animations.play("WalkSide", true);
         }
         else if (this.cursor.right.isDown || this.input.keyboard.isDown(Phaser.Keyboard.RIGHT)) {
             this.player.body.velocity.x = 200;
-            this.player.animations.play("WalkRight", true);
+            this.player.animations.play("WalkSide", true);
         }
         else if (this.cursor.right.isDown || this.input.mousePointer.isDown) {
-            //this.player.animations.play("WalkRight", true);
+            this.player.animations.play("WalkFire", true);
             if (this.player.alive) {
                 this.fire();
             }

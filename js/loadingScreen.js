@@ -4,6 +4,7 @@ Wrap.loadingScreen = function (game) { };
 Wrap.loadingScreen.prototype = {
     preload: function () {
         this.load.image("Fon", "images/bg.jpg");
+        this.load.image("Pointer", "images/aim.png");
         this.load.image('Bullet', "images/snow_ball.png");
         this.load.image('HealthFull', "images/health_full.png");
         this.load.image('HealthEmpty', "images/health_empty.png");
@@ -14,7 +15,7 @@ Wrap.loadingScreen.prototype = {
         this.load.spritesheet('SmallBoss', "images/small_boss.png", 200, 273, 4);
         this.load.spritesheet('BigBoss', "images/big_boss.png", 200, 252, 2);
         this.load.spritesheet("Player", "images/eric.png", 200, 192, 13);
-
+        this.load.spritesheet("Blood", "images/blood.png", 60, 60, 4);
 
 
         this.load.audio('Music', 'audio/main_music.mp3');
