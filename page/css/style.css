@@ -1058,7 +1058,8 @@ footer {
   -webkit-flex: 0 0 auto;
       -ms-flex: 0 0 auto;
           flex: 0 0 auto;
-  background: #ffffff;
+  background: #29252a;
+  color: #ffffff;
 }
 
 .copyright {
@@ -1072,7 +1073,6 @@ footer {
   padding: 5px 10px 0 10px;
 }
 .social a {
-  color: #333333;
   font-size: 42px;
 }
 .social a:hover {
