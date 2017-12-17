@@ -17,7 +17,7 @@ Wrap.gameplay.prototype = {
         if (width > height) {
             this.back.width = this.world.width;
         }
-
+               
         /*pointer*/
         this.game.canvas.style.cursor = "none";
         this.pointer = this.add.sprite(0, 0, "Pointer");
@@ -25,13 +25,24 @@ Wrap.gameplay.prototype = {
         this.physics.enable(this.pointer);
         this.pointer.body.allowRotation = false;
         
+        /*mobile controls*/
+        this.buttons = this.add.group();
+        this.buttons.enableBody = true;
+        this.buttons.physicsBodyType = Phaser.Physics.ARCADE;
+        this.rightButton = this.add.button(width - 80, height - 125, 'RightButton', this.controls.right, this, 2, 1, 0);
+        this.leftButton = this.add.button(width - 190, height - 125, 'LeftButton', this.controls.left, this, 2, 1, 0);
+        this.topButton = this.add.button(width - 135, height - 170, 'TopButton', this.controls.top, this, 2, 1, 0);
+        this.downButton = this.add.button(width - 135, height - 80, 'DownButton', this.controls.down, this, 2, 1, 0);
+        if (width >= 1024) {
+            this.rightButton.exists = this.leftButton.exists = this.topButton.exists = this.downButton.exists = false;
+        }
         /*score*/
         this.scoreText = this.add.text(32, 32, 'Score : ' + this.score, { font: "bold 32px SouthPark", fill: "#000" });
         this.scoreText.position.setTo(5);
         /*player*/
         this.player = this.add.sprite(400, -800, "Player");
         this.player.anchor.setTo(0.5);
-        this.player.smoothed = false;
+        this.player.smoothed = true;
         this.physics.startSystem(Phaser.Physics.ARCADE);
         this.physics.enable(this.player);
         /*bullets*/
@@ -171,7 +182,7 @@ Wrap.gameplay.prototype = {
         smallBoss.animations.add('walk');
         smallBoss.animations.play('walk', 10, true);
         smallBoss.scale.setTo(0.45);
-        smallBoss.smoothed = false;
+        smallBoss.smoothed = true;
         smallBoss.health = 90;
         customMethods.randomMovement(this.player, 1500, smallBoss, 0.37, 200, 2300);
         this.time.events.add(Phaser.Timer.SECOND * 5, soundOfBosses, this);
@@ -187,6 +198,7 @@ Wrap.gameplay.prototype = {
         bigBoss.animations.play('walk', 2, true);
         this.add.tween(bigBoss).to({ x: 0 }, 4000, Phaser.Easing.Linear.None, true, 0, 1000, true);
         bigBoss.scale.setTo(0.9);
+        bigBoss.smoothed = true;
         bigBoss.health = 100;
         customMethods.randomMovement(this.player, 1700, bigBoss, 0.3, 90, 1800);
         bigBoss.smoothed = false;
@@ -304,6 +316,7 @@ Wrap.gameplay.prototype = {
     },
     create: function () {
         this.input.mouse.capture = true;
+        this.input.onTap.add(this.onTap, this);
         this.createPlayer();
         this.createBullets();
         this.time.events.add(Phaser.Timer.SECOND * 10, playerStartSound, this);
@@ -314,8 +327,10 @@ Wrap.gameplay.prototype = {
         }
 
     },
+    onTap: function (pointer, doubleTap) {        
+        this.input.mousePointer = pointer;
+    },
     update: function () {
-        //this.back.tilePosition.x -= 0.25;
         this.enemies.sort('y', Phaser.Group.SORT_ASCENDING);
         this.world.bringToTop(this.boss);
         this.world.bringToTop(this.pointer);
@@ -325,7 +340,10 @@ Wrap.gameplay.prototype = {
         this.world.bringToTop(this.pauseText);
         this.world.bringToTop(this.unPauseText);
         this.world.bringToTop(this.restartText);
-
+        this.world.bringToTop(this.rightButton);
+        this.world.bringToTop(this.leftButton);
+        this.world.bringToTop(this.topButton);
+        this.world.bringToTop(this.downButton);
         //pointer
         this.physics.arcade.moveToPointer(this.pointer, 0, this.input.activePointer,100);
         //keyboard
@@ -335,19 +353,19 @@ Wrap.gameplay.prototype = {
             this.player.body.velocity.y = -200;
             this.player.animations.play("WalkUp", true);
         }
-        else if (this.cursor.down.isDown || this.input.keyboard.isDown(Phaser.Keyboard.DOWN)) {
+        else if (this.input.keyboard.isDown(Phaser.Keyboard.DOWN)) {
             this.player.body.velocity.y = 200;
             this.player.animations.play("WalkSide", true);
         }
-        if (this.cursor.left.isDown || this.input.keyboard.isDown(Phaser.Keyboard.LEFT)) {
+        if (this.input.keyboard.isDown(Phaser.Keyboard.LEFT)) {
             this.player.body.velocity.x = -200;
             this.player.animations.play("WalkSide", true);
         }
-        else if (this.cursor.right.isDown || this.input.keyboard.isDown(Phaser.Keyboard.RIGHT)) {
+        else if (this.input.keyboard.isDown(Phaser.Keyboard.RIGHT)) {
             this.player.body.velocity.x = 200;
             this.player.animations.play("WalkSide", true);
         }
-        else if (this.cursor.right.isDown || this.input.mousePointer.isDown) {
+        else if (this.input.mousePointer.isDown) {
             this.player.animations.play("WalkFire", true);
             if (this.player.alive) {
                 this.fire();
@@ -367,6 +385,24 @@ Wrap.gameplay.prototype = {
         this.physics.arcade.overlap(this.bullets, this.boss, this.damageBoss, null, this);
         this.physics.arcade.overlap(this.bullets, this.enemies, this.damageEnemy, null, this);
 
+    },
+    controls: {
+        left: function () {
+            this.player.body.velocity.x = -600;
+            this.player.animations.play("WalkSide", true);
+        },
+        right: function() {
+            this.player.body.velocity.x = 600;
+            this.player.animations.play("WalkSide", true);
+        },
+        top: function () {
+            this.player.body.velocity.y = -600;
+            this.player.animations.play("WalkUp", true);
+        },
+        down: function() {
+            this.player.body.velocity.y = 600;
+            this.player.animations.play("WalkSide", true);
+        }
     },
     fire: function () {
         if (this.time.now > this.bulletTimer) {

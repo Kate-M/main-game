@@ -1,4 +1,5 @@
 'use strict';
+
 var Wrap = Wrap || {};
 Wrap.loadingScreen = function (game) { };
 Wrap.loadingScreen.prototype = {
@@ -9,6 +10,10 @@ Wrap.loadingScreen.prototype = {
         this.load.image('HealthFull', "images/health_full.png");
         this.load.image('HealthEmpty', "images/health_empty.png");
         this.load.image('Life', "images/life.png");
+        this.load.image('RightButton', "images/right-arrow.png");
+        this.load.image('LeftButton', "images/left-arrow.png");
+        this.load.image('TopButton', "images/top-arrow.png");
+        this.load.image('DownButton', "images/down-arrow.png");
 
         this.load.spritesheet('Candy', "images/candy.png", 66, 75, 10);
         this.load.spritesheet('Enemy', 'images/enemy.png', 165, 200, 10);

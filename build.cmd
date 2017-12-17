@@ -1,0 +1,1 @@
+xcopy /E /I /D /Y "D:\code\kate\epam\main-game" "c:\inetpub\wwwroot\"
