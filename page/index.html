@@ -20,9 +20,28 @@
 </head>
 
 <body>
-
+	<div class="loaderArea">
+		<div class="load">
+			<div class="preloader-box">
+				<div class="preloader-container">
+					<div class="preloader-glass">
+						<div class="preloader-cap-left"></div>
+						<div class="preloader-cap-right"></div>
+						<div class="preloader-fill">
+							<div class="preloader-bubble-1"></div>
+							<div class="preloader-bubble-2"></div>
+							<div class="preloader-bubble-3"></div>
+							<div class="preloader-bubble-4"></div>
+							<div class="preloader-bubble-5"></div>
+							<div class="preloader-bubble-6"></div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
 	<div class="wrapper">
-		<header>
+		<header id="header">
 			<div class="container container-grid">
 				<div class="logo">
 					<a href="#">
@@ -31,21 +50,30 @@
 				</div>
 				<nav>
 					<ul class="menu container-grid">
-						<li><a href="#about" class="menu-item">About</a></li>
-						<li><a href="#controls" class="menu-item">Controls</a></li>
 						<li>
-							<a href="screenshots" class="menu-item">Screenshots</a></li>
+							<a href="#about" class="menu-item">About</a>
+						</li>
 						<li>
-							<a href="#start" class="menu-item">Start</a></li>
+							<a href="#controls" class="menu-item">Controls</a>
+						</li>
+						<li>
+							<a href="#screenshots" class="menu-item">Screenshots</a>
+						</li>
+						<li>
+							<a href="#start" class="menu-item">Start</a>
+						</li>
 					</ul>
 				</nav>
 			</div>
 		</header>
 		<main>
-			<section class="banner-area">
-				<div class="container">
-					<!--<p class="">Some text</p>-->
-				</div>
+			<section id="banner" class="banner-area">
+				<a href="#about" class="btn-down">
+					<img src="images/blood.svg" alt="">
+				</a>
+				<a href="#header" class="btn-up hide">
+					<img src="images/up-arrow.svg" alt="">
+				</a>
 			</section>
 			<section id="about" class="about">
 				<div class="container">
@@ -53,7 +81,9 @@
 					<ul class="about-list container-grid">
 						<li>
 							<figure class="about-thumb">
-								<img class="about-img" src="images/about1.png" alt="">
+								<div class="about-img-wrap">
+									<img class="about-img" src="images/about1.png" alt="">
+								</div>
 								<figcaption class="about-text">
 									<h3>History</h3>
 									<p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Beatae ex eos, omnis quidem asperiores fuga veniam sint
@@ -63,7 +93,9 @@
 						</li>
 						<li>
 							<figure class="about-thumb">
-								<img class="about-img" src="images/about2.png" alt="">
+								<div class="about-img-wrap">
+									<img class="about-img" src="images/about2.png" alt="">
+								</div>
 								<figcaption class="about-text">
 									<h3>Technologies</h3>
 									<p>This game is created with help of <a href="http://phaser.io">Phaser.io</a>, JS, CSS, HTML</p>
@@ -72,7 +104,9 @@
 						</li>
 						<li>
 							<figure class="about-thumb">
-								<img class="about-img" src="images/about3.png" alt="">
+								<div class="about-img-wrap">
+									<img class="about-img" src="images/about3.png" alt="">
+								</div>
 								<figcaption class="about-text">
 									<h3>Resolution</h3>
 									<p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Beatae ex eos, omnis quidem asperiores fuga veniam sint
@@ -89,8 +123,8 @@
 					<div class="controls-text">
 						<ul class="controls-list">
 							<li>
-								<div class="controls-preview controls-side"></div>
-								<div class="controls-button container-grid">
+								<div class="controls-preview controls-player controls-side"></div>
+								<div class="controls-button">
 									<div class="controls-button-wrap">
 										<p>Left</p>
 										<span class="icon-arrow-left"></span>
@@ -106,7 +140,7 @@
 								</div>
 							</li>
 							<li>
-								<div class="controls-preview controls-up"></div>
+								<div class="controls-preview controls-player controls-up"></div>
 								<div class="controls-button">
 									<div class="controls-button-wrap">
 										<p>Up</p>
@@ -115,11 +149,26 @@
 								</div>
 							</li>
 							<li>
-								<div class="controls-preview controls-up"></div>
+								<div class="controls-preview controls-player controls-shoot"></div>
 								<div class="controls-button">
 									<div class="controls-button-wrap">
 										<p>Shoot</p>
-										<span class="icon-mouse"></span>
+										<div class="controls-button-group">
+											<object class="controls-mouse" type="image/svg+xml" data="images/mouse.svg"></object>
+										</div>
+									</div>
+								</div>
+							</li>
+							<li>
+								<div class="controls-preview controls-preview-scrht"></div>
+								<div class="controls-button">
+									<div class="controls-button-wrap">
+										<p>Pause</p>
+										<span class="icon-letter-p"></span>
+									</div>
+									<div class="controls-button-wrap">
+										<p>Restart</p>
+										<span class="icon-letter-r"></span>
 									</div>
 								</div>
 							</li>
@@ -152,7 +201,7 @@
 					</ul>
 				</div>
 			</section>
-			<section id="play" class="play">
+			<section id="start" class="start">
 				<div class="container">
 					<h2>Start</h2>
 					<div class="button-box">
@@ -163,14 +212,25 @@
 		</main>
 		<footer>
 			<div class="container container-grid">
-				<div class="copyright">Kate Minich 2017</div>
+				<div class="copyright">
+					<p>&copy; Kate Minich 2017</p>
+				</div>
 				<ul class="social container-grid">
-					<li><a href="https://kate-m.github.io"><span class="icon-github-sign"></span></a></li>
-					<li><a href="https://www.linkedin.com/in/ekaterina-minich-61587594/"><span class="icon-linkedin-logo"></span></a></li>
+					<li>
+						<a href="https://kate-m.github.io" target="_blank">
+							<span class="icon-github-sign"></span>
+						</a>
+					</li>
+					<li>
+						<a href="https://www.linkedin.com/in/ekaterina-minich-61587594/" target="_blank">
+							<span class="icon-linkedin-logo"></span>
+						</a>
+					</li>
+				</ul>
 			</div>
+		</footer>
 	</div>
-	</footer>
-	</div>
+	<script src="js/scripts.js"></script>
 </body>
 
 </html>
