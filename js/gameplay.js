@@ -134,12 +134,12 @@ Wrap.gameplay.prototype = {
     },
     createCreep: function () {
         var leftEnemyConfig = {
-            startPoint: { x: width + 300, y: this.world.randomY * 0.3 + 300 },
+            startPoint: { x: width + 300, y: this.world.randomY * 0.3 + height/2 },
             endPoint: { x: -170 }
         };
 
         var rightEnemyConfig = {
-            startPoint: { x: -170, y: this.world.randomY * 0.3 + 300 },
+            startPoint: { x: -170, y: this.world.randomY * 0.3 + height/2 },
             endPoint: { x: width + 350 }
         };
 
@@ -184,7 +184,7 @@ Wrap.gameplay.prototype = {
         smallBoss.scale.setTo(0.45);
         smallBoss.smoothed = true;
         smallBoss.health = 90;
-        customMethods.randomMovement(this.player, 1500, smallBoss, 0.37, 200, 2300);
+        customMethods.randomMovement(this.player, 1500, smallBoss, 0.37, height/2, 2300);
         this.time.events.add(Phaser.Timer.SECOND * 5, soundOfBosses, this);
         function soundOfBosses() {
             if (smallBoss.health > 0) {
@@ -200,7 +200,7 @@ Wrap.gameplay.prototype = {
         bigBoss.scale.setTo(0.9);
         bigBoss.smoothed = true;
         bigBoss.health = 100;
-        customMethods.randomMovement(this.player, 1700, bigBoss, 0.3, 90, 1800);
+        customMethods.randomMovement(this.player, 1700, bigBoss, 0.3, height/3, 1800);
         bigBoss.smoothed = false;
         this.inBigBoss.play('', 0, 0.75, false);
         this.time.events.add(Phaser.Timer.SECOND * 7, soundOfBosses, this);
