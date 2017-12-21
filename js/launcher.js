@@ -11,7 +11,7 @@ Wrap.launcher.prototype = {
     },
     preload: function () {
         this.load.image("Logo", "images/logo.png");
-        this.load.spritesheet("LoadingBars", "images/load.png", 256);//для прогресса загрузки
+        this.load.spritesheet("LoadingBars", "images/load.png", 256);//progress
     },
     create: function () {
         this.state.start("LoadingScreen");

@@ -1,5 +1,6 @@
 var customValues = {
-    playerMovementSpeed: 100,
+    playerMovementSpeed: 200,
+    playerMovementSpeedMobile: 600,
     playerFireRate: 200,
     bulletProjectileSpeed: 600,
 };

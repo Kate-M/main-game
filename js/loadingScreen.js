@@ -1,5 +1,4 @@
 'use strict';
-
 var Wrap = Wrap || {};
 Wrap.loadingScreen = function (game) { };
 Wrap.loadingScreen.prototype = {
@@ -12,7 +11,7 @@ Wrap.loadingScreen.prototype = {
         this.load.image('Life', "images/life.png");
         this.load.image('RightButton', "images/right-arrow.png");
         this.load.image('LeftButton', "images/left-arrow.png");
-        this.load.image('TopButton', "images/top-arrow.png");
+        this.load.image('UpButton', "images/top-arrow.png");
         this.load.image('DownButton', "images/down-arrow.png");
 
         this.load.spritesheet('Candy', "images/candy.png", 66, 75, 10);
@@ -21,7 +20,6 @@ Wrap.loadingScreen.prototype = {
         this.load.spritesheet('BigBoss', "images/big_boss.png", 200, 252, 2);
         this.load.spritesheet("Player", "images/eric.png", 200, 192, 13);
         this.load.spritesheet("Blood", "images/blood.png", 60, 60, 4);
-
 
         this.load.audio('Music', 'audio/main_music.mp3');
         this.load.audio('Killed', 'audio/die.mp3');
@@ -42,12 +40,11 @@ Wrap.loadingScreen.prototype = {
         this.fullBar = this.add.sprite(this.emptyBar.x, this.emptyBar.y, "LoadingBars", 1);
         this.percentage = this.add.text(this.emptyBar.x, (this.emptyBar.y + 3), "0%", { font: "32px 'SouthPark'", fill: "#000" })
 
-        this.logo.anchor.setTo(0.5); //center
+        this.logo.anchor.setTo(0.5);
         this.emptyBar.anchor.setTo(0.5);
         this.fullBar.anchor.setTo(0.5);
         this.percentage.anchor.setTo(0.5);
 
-        //this.load.setPreloadSprite(this.fullBar);
     },
     create: function () {
         this.state.start("Gameplay");
