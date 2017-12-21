@@ -28,7 +28,7 @@ Wrap.gameplay.prototype = {
         this.mobileUI = new MobileUI(this);
         this.walkSpeed = customValues.playerMovementSpeed;
 
-        if (width < 1024) {
+        if (width <= 1024) {
             this.mobileUI.init(this.controls.left, this.controls.right, this.controls.up, this.controls.down);
             this.walkSpeed = customValues.playerMovementSpeedMobile;
         }
