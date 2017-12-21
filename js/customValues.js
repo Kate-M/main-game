@@ -7,7 +7,7 @@ var customValues = {
 
 function EnemyFactory() {
     this.enemiesTotal = {
-        turkey: 180,
+        turkey: 150,
         kenny: 1,
         chief: 1
     };

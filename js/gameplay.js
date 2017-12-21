@@ -6,7 +6,6 @@ Wrap.gameplay = function (game) { };
 Wrap.gameplay.prototype = {
     preload: function () {
         //this.candy;
-        this.load.crossOrigin = true;
         this.timer = 0;
         this.score = 0;
         /*backgroung*/
